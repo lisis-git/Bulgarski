@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1f14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bulgarski">
+<link rel="apple-touch-icon" href="./icon-512.png">
+<link rel="icon" type="image/png" href="./icon-512.png">
+<link id="manifest" rel="manifest">
+<title>Bulgarski – A1 → A2</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #0d1f14; color: #e8f5ee;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh; display: flex; justify-content: center;
+    padding: env(safe-area-inset-top) 16px calc(40px + env(safe-area-inset-bottom));
+  }
+  .wrap { width: 100%; max-width: 480px; }
+  .top { display:flex; justify-content:space-between; align-items:center; padding:24px 0 12px; border-bottom:1px solid #1f3a28; margin-bottom:24px; }
+  .brand { font-size:20px; font-weight:800; letter-spacing:-0.02em; color:#7ed49a; }
+  .streak { display:flex; align-items:center; gap:6px; font-weight:700; font-size:16px; }
+  .count { font-size:14px; color:#5a9070; }
+  .badge { display:inline-block; background:#1a3a2a; color:#c8f0d8; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:4px 10px; border-radius:20px; }
+  .panel { background:#122118; border:1.5px solid #1f3a28; border-radius:16px; padding:18px 20px; margin:18px 0; }
+  .panel .h { font-size:12px; color:#5a9070; font-weight:700; letter-spacing:0.05em; margin-bottom:6px; text-transform:uppercase; }
+  .mega { font-size:40px; font-weight:800; color:#7ed49a; line-height:1; }
+  .megasub { font-size:13px; color:#5d8a6f; margin-top:4px; }
+  .lvlrow { display:flex; align-items:center; gap:10px; margin-top:12px; font-size:13px; }
+  .lvltag { width:28px; font-weight:800; color:#a8e6c0; }
+  .lvlbar { flex:1; background:#1a3a28; height:8px; border-radius:99px; overflow:hidden; }
+  .lvlfill { height:100%; background:#7ed49a; border-radius:99px; transition:width .4s ease; }
+  .lvlnum { width:62px; text-align:right; color:#5d8a6f; font-variant-numeric:tabular-nums; }
+  .stats { display:flex; gap:10px; margin:18px 0; }
+  .stat { flex:1; background:#122118; border:1.5px solid #1f3a28; border-radius:14px; padding:16px 6px; text-align:center; }
+  .num { font-size:26px; font-weight:800; color:#7ed49a; line-height:1; }
+  .lbl { font-size:11px; color:#5a9070; margin-top:6px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; }
+  .seclabel { font-size:12px; color:#5a9070; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; margin:18px 0 8px; }
+  .pills { display:flex; gap:8px; flex-wrap:wrap; }
+  .pill { flex:1; min-width:0; padding:11px 6px; border-radius:12px; border:1.5px solid #1f3a28; background:#122118; color:#7ed49a; font-weight:700; font-size:14px; cursor:pointer; text-align:center; white-space:nowrap; }
+  .pill.on { background:#7ed49a; color:#0d1f14; border-color:#7ed49a; }
+  .cta { width:100%; padding:18px; border:none; border-radius:16px; background:#7ed49a; color:#0d1f14; font-weight:800; font-size:17px; cursor:pointer; letter-spacing:-0.01em; margin-top:18px; }
+  .cta:active { transform:scale(.99); }
+  .ghost { width:100%; padding:16px; border:1.5px solid #1f3a28; border-radius:16px; background:transparent; color:#7ed49a; font-weight:700; font-size:15px; cursor:pointer; margin-top:12px; }
+  .foot { margin-top:26px; color:#2f5742; font-size:11px; text-align:center; letter-spacing:0.04em; }
+  .bar { background:#1a3a28; border-radius:99px; height:6px; margin-bottom:16px; overflow:hidden; }
+  .fill { background:#7ed49a; height:100%; border-radius:99px; transition:width .3s ease; }
+  .card { background:#122118; border:1.5px solid #1f3a28; border-radius:20px; padding:34px 22px; text-align:center; min-height:210px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:12px; cursor:pointer; user-select:none; transition:transform .14s ease; }
+  .card.flip { transform:scaleY(.94); }
+  .word { font-size:40px; font-weight:800; color:#a8e6c0; line-height:1.05; }
+  .rom { font-size:16px; color:#5a9070; font-style:italic; }
+  .note { font-size:12px; color:#3d6b50; }
+  .divln { width:100%; border-top:1px solid #1f3a28; margin:4px 0; }
+  .trans { font-size:24px; font-weight:700; color:#7ed49a; }
+  .hint { font-size:13px; color:#3d6b50; }
+  .spk { width:52px; height:52px; border-radius:50%; border:1.5px solid #2f5742; background:#0d1f14; color:#7ed49a; font-size:22px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
+  .spk:active { background:#1a3a28; }
+  .ans { display:flex; gap:10px; margin-top:18px; }
+  .ans button { flex:1; padding:15px 4px; border:none; border-radius:14px; font-weight:700; font-size:15px; cursor:pointer; opacity:.55; transition:opacity .15s, transform .1s; }
+  .ans button.sugg { opacity:1; box-shadow:0 0 0 2px rgba(255,255,255,.18) inset; }
+  .ans button:active { transform:scale(.97); }
+  .a-wrong { background:#7f1d1d; color:#fff; }
+  .a-hard  { background:#d97706; color:#0d1f14; }
+  .a-good  { background:#7ed49a; color:#0d1f14; }
+  .prompt { font-size:30px; font-weight:800; color:#7ed49a; text-align:center; margin:6px 0 2px; }
+  .promptsub { text-align:center; color:#5a9070; font-size:13px; margin-bottom:18px; }
+  .inp { width:100%; padding:16px; border-radius:14px; border:1.5px solid #2f5742; background:#0d1f14; color:#e8f5ee; font-size:18px; text-align:center; outline:none; }
+  .inp:focus { border-color:#7ed49a; }
+  .check { width:100%; padding:15px; border:none; border-radius:14px; background:#7ed49a; color:#0d1f14; font-weight:800; font-size:16px; cursor:pointer; margin-top:12px; }
+  .verdict { text-align:center; margin:14px 0 4px; font-weight:800; font-size:18px; }
+  .v-ok { color:#7ed49a; } .v-close { color:#d97706; } .v-no { color:#f97373; }
+  .yours { text-align:center; color:#5d8a6f; font-size:14px; margin-bottom:6px; }
+  .cancel { display:block; margin:18px auto 0; background:none; border:none; color:#3d6b50; font-size:13px; cursor:pointer; }
+  .emoji { font-size:52px; }
+  button:focus-visible, .pill:focus-visible, .inp:focus-visible { outline:2px solid #7ed49a; outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce) { .card, .ans button, .cta { transition:none; } .card.flip { transform:none; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+// ───────── Manifest (Android install) ─────────
+(function(){
+  var m={name:"Bulgarski – A1 → A2",short_name:"Bulgarski",start_url:".",scope:".",display:"standalone",orientation:"portrait",background_color:"#0d1f14",theme_color:"#0d1f14",icons:[{src:"./icon-512.png",sizes:"512x512",type:"image/png",purpose:"any maskable"}]};
+  try{ document.getElementById("manifest").href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:"application/manifest+json"})); }catch(e){}
+})();
+
+// ───────── Vocabulary: A1 + A2 in themed units ─────────
+var VOCAB=[
+ // ── A1 · Begrüßung & Höflichkeit
+ {bg:"Здравейте",de:"Guten Tag (formell)",cat:"Begrüßung",lvl:"A1",rom:"Sdrawéjte"},
+ {bg:"Здрасти",de:"Hallo (informell)",cat:"Begrüßung",lvl:"A1",rom:"Sdrásti"},
+ {bg:"Добро утро",de:"Guten Morgen",cat:"Begrüßung",lvl:"A1",rom:"Dobró útro"},
+ {bg:"Добър вечер",de:"Guten Abend",cat:"Begrüßung",lvl:"A1",rom:"Dóbăr wécher"},
+ {bg:"Лека нощ",de:"Gute Nacht",cat:"Begrüßung",lvl:"A1",rom:"Léka noscht"},
+ {bg:"Довиждане",de:"Auf Wiedersehen",cat:"Begrüßung",lvl:"A1",rom:"Dowíschdane"},
+ {bg:"Благодаря",de:"Danke",cat:"Begrüßung",lvl:"A1",rom:"Blagodarjá"},
+ {bg:"Моля",de:"Bitte / Gern geschehen",cat:"Begrüßung",lvl:"A1",rom:"Mólja"},
+ {bg:"Извинете",de:"Entschuldigung (formell)",cat:"Begrüßung",lvl:"A1",rom:"Iswinéte"},
+ {bg:"Да",de:"Ja",cat:"Begrüßung",lvl:"A1",rom:"Da"},
+ {bg:"Не",de:"Nein",cat:"Begrüßung",lvl:"A1",rom:"Ne"},
+ // ── A1 · Personen & Familie
+ {bg:"Аз",de:"ich",cat:"Personen",lvl:"A1",rom:"As"},
+ {bg:"Ти",de:"du",cat:"Personen",lvl:"A1",rom:"Ti"},
+ {bg:"Той",de:"er",cat:"Personen",lvl:"A1",rom:"Toj"},
+ {bg:"Тя",de:"sie",cat:"Personen",lvl:"A1",rom:"Tja"},
+ {bg:"Ние",de:"wir",cat:"Personen",lvl:"A1",rom:"Níe"},
+ {bg:"Майка",de:"Mutter",cat:"Personen",lvl:"A1",rom:"Májka",note:"weiblich"},
+ {bg:"Баща",de:"Vater",cat:"Personen",lvl:"A1",rom:"Baschtá",note:"männlich"},
+ {bg:"Брат",de:"Bruder",cat:"Personen",lvl:"A1",rom:"Brat"},
+ {bg:"Сестра",de:"Schwester",cat:"Personen",lvl:"A1",rom:"Sestrá"},
+ {bg:"Дете",de:"Kind",cat:"Personen",lvl:"A1",rom:"Deté",note:"sächlich"},
+ {bg:"Приятел",de:"Freund",cat:"Personen",lvl:"A1",rom:"Prijátel"},
+ // ── A1 · Zahlen
+ {bg:"Едно",de:"eins",cat:"Zahlen",lvl:"A1",rom:"Ednó"},
+ {bg:"Две",de:"zwei",cat:"Zahlen",lvl:"A1",rom:"Dwe"},
+ {bg:"Три",de:"drei",cat:"Zahlen",lvl:"A1",rom:"Tri"},
+ {bg:"Четири",de:"vier",cat:"Zahlen",lvl:"A1",rom:"Tschétiri"},
+ {bg:"Пет",de:"fünf",cat:"Zahlen",lvl:"A1",rom:"Pet"},
+ {bg:"Шест",de:"sechs",cat:"Zahlen",lvl:"A1",rom:"Schest"},
+ {bg:"Седем",de:"sieben",cat:"Zahlen",lvl:"A1",rom:"Sédem"},
+ {bg:"Осем",de:"acht",cat:"Zahlen",lvl:"A1",rom:"Ósem"},
+ {bg:"Девет",de:"neun",cat:"Zahlen",lvl:"A1",rom:"Déwet"},
+ {bg:"Десет",de:"zehn",cat:"Zahlen",lvl:"A1",rom:"Déset"},
+ {bg:"Сто",de:"hundert",cat:"Zahlen",lvl:"A1",rom:"Sto"},
+ {bg:"Хиляда",de:"tausend",cat:"Zahlen",lvl:"A1",rom:"Chiljáda"},
+ // ── A1 · Essen & Trinken
+ {bg:"Хляб",de:"Brot",cat:"Essen",lvl:"A1",rom:"Chljab"},
+ {bg:"Вода",de:"Wasser",cat:"Essen",lvl:"A1",rom:"Wodá"},
+ {bg:"Кафе",de:"Kaffee",cat:"Essen",lvl:"A1",rom:"Kafé"},
+ {bg:"Чай",de:"Tee",cat:"Essen",lvl:"A1",rom:"Tschaj"},
+ {bg:"Вино",de:"Wein",cat:"Essen",lvl:"A1",rom:"Wíno"},
+ {bg:"Бира",de:"Bier",cat:"Essen",lvl:"A1",rom:"Bíra"},
+ {bg:"Мляко",de:"Milch",cat:"Essen",lvl:"A1",rom:"Mljáko"},
+ {bg:"Сирене",de:"Weißkäse",cat:"Essen",lvl:"A1",rom:"Sírene"},
+ {bg:"Месо",de:"Fleisch",cat:"Essen",lvl:"A1",rom:"Mesó"},
+ {bg:"Плод",de:"Obst / Frucht",cat:"Essen",lvl:"A1",rom:"Plod"},
+ {bg:"Зеленчук",de:"Gemüse",cat:"Essen",lvl:"A1",rom:"Selentschúk"},
+ {bg:"Баница",de:"Blätterteig-Gebäck (BG)",cat:"Essen",lvl:"A1",rom:"Bánitsa"},
+ // ── A1 · Zeit & Tage
+ {bg:"Ден",de:"Tag",cat:"Zeit",lvl:"A1",rom:"Den"},
+ {bg:"Нощ",de:"Nacht",cat:"Zeit",lvl:"A1",rom:"Noscht"},
+ {bg:"Седмица",de:"Woche",cat:"Zeit",lvl:"A1",rom:"Sédmiza"},
+ {bg:"Месец",de:"Monat",cat:"Zeit",lvl:"A1",rom:"Méssez"},
+ {bg:"Година",de:"Jahr",cat:"Zeit",lvl:"A1",rom:"Godína"},
+ {bg:"Днес",de:"heute",cat:"Zeit",lvl:"A1",rom:"Dnes"},
+ {bg:"Утре",de:"morgen",cat:"Zeit",lvl:"A1",rom:"Útre"},
+ {bg:"Вчера",de:"gestern",cat:"Zeit",lvl:"A1",rom:"Wtschéra"},
+ {bg:"Сега",de:"jetzt",cat:"Zeit",lvl:"A1",rom:"Segá"},
+ {bg:"Час",de:"Stunde / Uhr",cat:"Zeit",lvl:"A1",rom:"Tschas"},
+ // ── A1 · Farben
+ {bg:"Червен",de:"rot",cat:"Farben",lvl:"A1",rom:"Tscherwén"},
+ {bg:"Син",de:"blau",cat:"Farben",lvl:"A1",rom:"Sin"},
+ {bg:"Зелен",de:"grün",cat:"Farben",lvl:"A1",rom:"Selén"},
+ {bg:"Жълт",de:"gelb",cat:"Farben",lvl:"A1",rom:"Schălt"},
+ {bg:"Черен",de:"schwarz",cat:"Farben",lvl:"A1",rom:"Tschéren"},
+ {bg:"Бял",de:"weiß",cat:"Farben",lvl:"A1",rom:"Bjal"},
+ // ── A1 · Verben (Grund)
+ {bg:"Съм",de:"sein (аз съм = ich bin)",cat:"Verben",lvl:"A1",rom:"Săm"},
+ {bg:"Имам",de:"haben",cat:"Verben",lvl:"A1",rom:"Ímam"},
+ {bg:"Искам",de:"wollen / möchten",cat:"Verben",lvl:"A1",rom:"Ískam"},
+ {bg:"Мога",de:"können",cat:"Verben",lvl:"A1",rom:"Móga"},
+ {bg:"Знам",de:"wissen",cat:"Verben",lvl:"A1",rom:"Snam"},
+ {bg:"Говоря",de:"sprechen",cat:"Verben",lvl:"A1",rom:"Gowórja"},
+ {bg:"Ям",de:"essen",cat:"Verben",lvl:"A1",rom:"Jam"},
+ {bg:"Пия",de:"trinken",cat:"Verben",lvl:"A1",rom:"Píja"},
+ {bg:"Отивам",de:"gehen / hingehen",cat:"Verben",lvl:"A1",rom:"Otívam"},
+ {bg:"Идвам",de:"kommen",cat:"Verben",lvl:"A1",rom:"Ídwam"},
+ // ── A1 · Fragen
+ {bg:"Какво?",de:"was?",cat:"Fragen",lvl:"A1",rom:"Kakwó?"},
+ {bg:"Кой?",de:"wer?",cat:"Fragen",lvl:"A1",rom:"Koj?"},
+ {bg:"Кога?",de:"wann?",cat:"Fragen",lvl:"A1",rom:"Kogá?"},
+ {bg:"Къде?",de:"wo?",cat:"Fragen",lvl:"A1",rom:"Kădé?"},
+ {bg:"Защо?",de:"warum?",cat:"Fragen",lvl:"A1",rom:"Saschtó?"},
+ {bg:"Как?",de:"wie?",cat:"Fragen",lvl:"A1",rom:"Kak?"},
+ {bg:"Колко?",de:"wie viel?",cat:"Fragen",lvl:"A1",rom:"Kólko?"},
+ {bg:"Как си?",de:"Wie geht's dir?",cat:"Fragen",lvl:"A1",rom:"Kak si?"},
+ {bg:"Добре съм",de:"Mir geht's gut",cat:"Fragen",lvl:"A1",rom:"Dobré săm"},
+ {bg:"Не разбирам",de:"Ich verstehe nicht",cat:"Fragen",lvl:"A1",rom:"Ne rasbíram"},
+ // ── A1 · Orte
+ {bg:"Град",de:"Stadt",cat:"Orte",lvl:"A1",rom:"Grad"},
+ {bg:"Улица",de:"Straße",cat:"Orte",lvl:"A1",rom:"Úliza"},
+ {bg:"Магазин",de:"Geschäft / Laden",cat:"Orte",lvl:"A1",rom:"Magasín"},
+ {bg:"Ресторант",de:"Restaurant",cat:"Orte",lvl:"A1",rom:"Restoránt"},
+ {bg:"Гара",de:"Bahnhof",cat:"Orte",lvl:"A1",rom:"Gára"},
+ {bg:"Летище",de:"Flughafen",cat:"Orte",lvl:"A1",rom:"Letíschte"},
+ {bg:"Болница",de:"Krankenhaus",cat:"Orte",lvl:"A1",rom:"Bólniza"},
+ {bg:"Хотел",de:"Hotel",cat:"Orte",lvl:"A1",rom:"Hotél"},
+ {bg:"Тоалетна",de:"Toilette",cat:"Orte",lvl:"A1",rom:"Toalétna"},
+ {bg:"Дом",de:"Zuhause / Haus",cat:"Orte",lvl:"A1",rom:"Dom"},
+
+ // ── A2 · Einkaufen & Geld
+ {bg:"Пари",de:"Geld",cat:"Einkaufen",lvl:"A2",rom:"Parí"},
+ {bg:"Цена",de:"Preis",cat:"Einkaufen",lvl:"A2",rom:"Zená"},
+ {bg:"Скъп",de:"teuer",cat:"Einkaufen",lvl:"A2",rom:"Skăp"},
+ {bg:"Евтин",de:"billig",cat:"Einkaufen",lvl:"A2",rom:"Éwtin"},
+ {bg:"Купувам",de:"kaufen",cat:"Einkaufen",lvl:"A2",rom:"Kupúwam"},
+ {bg:"Продавам",de:"verkaufen",cat:"Einkaufen",lvl:"A2",rom:"Prodáwam"},
+ {bg:"Плащам",de:"bezahlen",cat:"Einkaufen",lvl:"A2",rom:"Pláschtam"},
+ {bg:"Сметка",de:"Rechnung",cat:"Einkaufen",lvl:"A2",rom:"Smétka"},
+ {bg:"Намаление",de:"Rabatt",cat:"Einkaufen",lvl:"A2",rom:"Namalénie"},
+ // ── A2 · Reisen & Richtungen
+ {bg:"Наляво",de:"nach links",cat:"Reisen",lvl:"A2",rom:"Naljáwo"},
+ {bg:"Надясно",de:"nach rechts",cat:"Reisen",lvl:"A2",rom:"Nadjásno"},
+ {bg:"Направо",de:"geradeaus",cat:"Reisen",lvl:"A2",rom:"Naprávo"},
+ {bg:"Близо",de:"nah",cat:"Reisen",lvl:"A2",rom:"Blíso"},
+ {bg:"Далече",de:"weit",cat:"Reisen",lvl:"A2",rom:"Daléche"},
+ {bg:"Билет",de:"Ticket",cat:"Reisen",lvl:"A2",rom:"Bilét"},
+ {bg:"Влак",de:"Zug",cat:"Reisen",lvl:"A2",rom:"Wlak"},
+ {bg:"Автобус",de:"Bus",cat:"Reisen",lvl:"A2",rom:"Awtóbus"},
+ {bg:"Кола",de:"Auto",cat:"Reisen",lvl:"A2",rom:"Kolá"},
+ {bg:"Самолет",de:"Flugzeug",cat:"Reisen",lvl:"A2",rom:"Samolét"},
+ // ── A2 · Körper & Gesundheit
+ {bg:"Глава",de:"Kopf",cat:"Gesundheit",lvl:"A2",rom:"Glawá"},
+ {bg:"Ръка",de:"Hand / Arm",cat:"Gesundheit",lvl:"A2",rom:"Răká"},
+ {bg:"Крак",de:"Bein / Fuß",cat:"Gesundheit",lvl:"A2",rom:"Krak"},
+ {bg:"Око",de:"Auge",cat:"Gesundheit",lvl:"A2",rom:"Okó"},
+ {bg:"Боли ме",de:"Es tut mir weh",cat:"Gesundheit",lvl:"A2",rom:"Bolí me"},
+ {bg:"Лекар",de:"Arzt",cat:"Gesundheit",lvl:"A2",rom:"Lékar"},
+ {bg:"Аптека",de:"Apotheke",cat:"Gesundheit",lvl:"A2",rom:"Aptéka"},
+ {bg:"Лекарство",de:"Medikament",cat:"Gesundheit",lvl:"A2",rom:"Lekárstwo"},
+ {bg:"Болен",de:"krank",cat:"Gesundheit",lvl:"A2",rom:"Bólen"},
+ {bg:"Здрав",de:"gesund",cat:"Gesundheit",lvl:"A2",rom:"Sdraw"},
+ // ── A2 · Wetter & Natur
+ {bg:"Време",de:"Wetter / Zeit",cat:"Wetter",lvl:"A2",rom:"Wréme"},
+ {bg:"Слънце",de:"Sonne",cat:"Wetter",lvl:"A2",rom:"Slănze"},
+ {bg:"Дъжд",de:"Regen",cat:"Wetter",lvl:"A2",rom:"Dăschd"},
+ {bg:"Сняг",de:"Schnee",cat:"Wetter",lvl:"A2",rom:"Snjag"},
+ {bg:"Вятър",de:"Wind",cat:"Wetter",lvl:"A2",rom:"Wjátăr"},
+ {bg:"Топло",de:"warm",cat:"Wetter",lvl:"A2",rom:"Tóplo"},
+ {bg:"Студено",de:"kalt",cat:"Wetter",lvl:"A2",rom:"Studéno"},
+ {bg:"Море",de:"Meer",cat:"Wetter",lvl:"A2",rom:"Móre"},
+ {bg:"Планина",de:"Berg / Gebirge",cat:"Wetter",lvl:"A2",rom:"Planiná"},
+ {bg:"Гора",de:"Wald",cat:"Wetter",lvl:"A2",rom:"Gorá"},
+ // ── A2 · Arbeit & Beruf
+ {bg:"Работа",de:"Arbeit",cat:"Arbeit",lvl:"A2",rom:"Rabóta"},
+ {bg:"Работя",de:"arbeiten",cat:"Arbeit",lvl:"A2",rom:"Rabótja"},
+ {bg:"Учител",de:"Lehrer",cat:"Arbeit",lvl:"A2",rom:"Utschítel"},
+ {bg:"Студент",de:"Student",cat:"Arbeit",lvl:"A2",rom:"Studént"},
+ {bg:"Инженер",de:"Ingenieur",cat:"Arbeit",lvl:"A2",rom:"Inschenér"},
+ {bg:"Колега",de:"Kollege",cat:"Arbeit",lvl:"A2",rom:"Koléga"},
+ {bg:"Офис",de:"Büro",cat:"Arbeit",lvl:"A2",rom:"Ófis"},
+ {bg:"Среща",de:"Treffen / Termin",cat:"Arbeit",lvl:"A2",rom:"Sréschta"},
+ {bg:"Заплата",de:"Gehalt",cat:"Arbeit",lvl:"A2",rom:"Sapláta"},
+ // ── A2 · Hobbys & Freizeit
+ {bg:"Музика",de:"Musik",cat:"Freizeit",lvl:"A2",rom:"Músika"},
+ {bg:"Филм",de:"Film",cat:"Freizeit",lvl:"A2",rom:"Film"},
+ {bg:"Книга",de:"Buch",cat:"Freizeit",lvl:"A2",rom:"Kníga"},
+ {bg:"Спорт",de:"Sport",cat:"Freizeit",lvl:"A2",rom:"Sport"},
+ {bg:"Футбол",de:"Fußball",cat:"Freizeit",lvl:"A2",rom:"Futból"},
+ {bg:"Чета",de:"lesen",cat:"Freizeit",lvl:"A2",rom:"Tschetá"},
+ {bg:"Гледам",de:"schauen / ansehen",cat:"Freizeit",lvl:"A2",rom:"Glédam"},
+ {bg:"Слушам",de:"hören / zuhören",cat:"Freizeit",lvl:"A2",rom:"Slúscham"},
+ {bg:"Танцувам",de:"tanzen",cat:"Freizeit",lvl:"A2",rom:"Tanzúwam"},
+ {bg:"Пътувам",de:"reisen",cat:"Freizeit",lvl:"A2",rom:"Pătúwam"},
+ // ── A2 · Zuhause & Möbel
+ {bg:"Къща",de:"Haus",cat:"Zuhause",lvl:"A2",rom:"Kăschta"},
+ {bg:"Стая",de:"Zimmer",cat:"Zuhause",lvl:"A2",rom:"Stája"},
+ {bg:"Кухня",de:"Küche",cat:"Zuhause",lvl:"A2",rom:"Kúchnja"},
+ {bg:"Маса",de:"Tisch",cat:"Zuhause",lvl:"A2",rom:"Mása"},
+ {bg:"Стол",de:"Stuhl",cat:"Zuhause",lvl:"A2",rom:"Stol"},
+ {bg:"Легло",de:"Bett",cat:"Zuhause",lvl:"A2",rom:"Legló"},
+ {bg:"Врата",de:"Tür",cat:"Zuhause",lvl:"A2",rom:"Wratá"},
+ {bg:"Прозорец",de:"Fenster",cat:"Zuhause",lvl:"A2",rom:"Prosórez"},
+ {bg:"Ключ",de:"Schlüssel",cat:"Zuhause",lvl:"A2",rom:"Kljutsch"},
+ {bg:"Лампа",de:"Lampe",cat:"Zuhause",lvl:"A2",rom:"Lámpa"},
+ // ── A2 · Kleidung
+ {bg:"Дрехи",de:"Kleidung",cat:"Kleidung",lvl:"A2",rom:"Dréchi"},
+ {bg:"Риза",de:"Hemd",cat:"Kleidung",lvl:"A2",rom:"Rísa"},
+ {bg:"Панталон",de:"Hose",cat:"Kleidung",lvl:"A2",rom:"Pantalón"},
+ {bg:"Обувки",de:"Schuhe",cat:"Kleidung",lvl:"A2",rom:"Obúwki"},
+ {bg:"Яке",de:"Jacke",cat:"Kleidung",lvl:"A2",rom:"Jáke"},
+ {bg:"Шапка",de:"Mütze / Hut",cat:"Kleidung",lvl:"A2",rom:"Schápka"},
+ // ── A2 · Gefühle & Adjektive
+ {bg:"Щастлив",de:"glücklich",cat:"Gefühle",lvl:"A2",rom:"Schtastlíw"},
+ {bg:"Тъжен",de:"traurig",cat:"Gefühle",lvl:"A2",rom:"Tăschen"},
+ {bg:"Уморен",de:"müde",cat:"Gefühle",lvl:"A2",rom:"Umorén"},
+ {bg:"Гладен",de:"hungrig",cat:"Gefühle",lvl:"A2",rom:"Gláden"},
+ {bg:"Жаден",de:"durstig",cat:"Gefühle",lvl:"A2",rom:"Scháden"},
+ {bg:"Голям",de:"groß",cat:"Gefühle",lvl:"A2",rom:"Goljám"},
+ {bg:"Малък",de:"klein",cat:"Gefühle",lvl:"A2",rom:"Málăk"},
+ {bg:"Хубав",de:"schön / gut",cat:"Gefühle",lvl:"A2",rom:"Chúbaw"},
+ {bg:"Нов",de:"neu",cat:"Gefühle",lvl:"A2",rom:"Now"},
+ {bg:"Стар",de:"alt",cat:"Gefühle",lvl:"A2",rom:"Star"},
+ // ── A2 · Verben (erweitert)
+ {bg:"Правя",de:"machen / tun",cat:"Verben +",lvl:"A2",rom:"Práwja"},
+ {bg:"Давам",de:"geben",cat:"Verben +",lvl:"A2",rom:"Dáwam"},
+ {bg:"Виждам",de:"sehen",cat:"Verben +",lvl:"A2",rom:"Wíschdam"},
+ {bg:"Пиша",de:"schreiben",cat:"Verben +",lvl:"A2",rom:"Píscha"},
+ {bg:"Уча",de:"lernen",cat:"Verben +",lvl:"A2",rom:"Útscha"},
+ {bg:"Помагам",de:"helfen",cat:"Verben +",lvl:"A2",rom:"Pomágam"},
+ {bg:"Чакам",de:"warten",cat:"Verben +",lvl:"A2",rom:"Tschákam"},
+ {bg:"Започвам",de:"anfangen",cat:"Verben +",lvl:"A2",rom:"Sapótschwam"},
+ {bg:"Свършвам",de:"beenden",cat:"Verben +",lvl:"A2",rom:"Swărschwam"},
+ // ── A2 · Nützliche Sätze
+ {bg:"Колко струва?",de:"Wie viel kostet das?",cat:"Sätze",lvl:"A2",rom:"Kólko strúwa?"},
+ {bg:"Може ли сметката?",de:"Die Rechnung, bitte?",cat:"Sätze",lvl:"A2",rom:"Mósche li smétkata?"},
+ {bg:"Търся…",de:"Ich suche…",cat:"Sätze",lvl:"A2",rom:"Tărsja"},
+ {bg:"Имате ли…?",de:"Haben Sie…?",cat:"Sätze",lvl:"A2",rom:"Ímate li?"},
+ {bg:"Бих искал…",de:"Ich hätte gern…",cat:"Sätze",lvl:"A2",rom:"Bich ískal"},
+ {bg:"Можете ли да повторите?",de:"Können Sie wiederholen?",cat:"Sätze",lvl:"A2",rom:"Móschete li da powtórite?"},
+ {bg:"Къде е тоалетната?",de:"Wo ist die Toilette?",cat:"Sätze",lvl:"A2",rom:"Kădé e toalétnata?"},
+ {bg:"Приятно ми е",de:"Freut mich (kennenzulernen)",cat:"Sätze",lvl:"A2",rom:"Prijátno mi e"}
+];
+// ───────── Kyrillisches Alphabet (Bulgarisch, 30 Buchstaben) ─────────
+// bg = Anzeige (Gross + klein), match = Buchstabe zum Tippen/Vergleich, de = Lautwert (Prompt), note = Ausnahme/Hinweis
+var ALPHABET=[
+ {bg:"А а",match:"А",de:"a",note:"wie deutsches a",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Б б",match:"Б",de:"b",note:"wie b",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"В в",match:"В",de:"w",note:"Achtung, falscher Freund: sieht aus wie lat. B, klingt aber w (engl. v)",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Г г",match:"Г",de:"g",note:"wie g",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Д д",match:"Д",de:"d",note:"wie d",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Е е",match:"Е",de:"e",note:"wie e (immer offen, nie ie)",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Ж ж",match:"Ж",de:"sch (stimmhaft)",note:"wie J in Journal / g in Genie",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"З з",match:"З",de:"s (stimmhaft)",note:"wie s in Sonne",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"И и",match:"И",de:"i",note:"wie i",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Й й",match:"Й",de:"j",note:"kurzes j wie in ja / Mai",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"К к",match:"К",de:"k",note:"wie k",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Л л",match:"Л",de:"l",note:"wie l",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"М м",match:"М",de:"m",note:"wie m",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Н н",match:"Н",de:"n",note:"Achtung, falscher Freund: sieht aus wie lat. H, klingt aber n",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"О о",match:"О",de:"o",note:"wie o",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"П п",match:"П",de:"p",note:"wie p (griech. Pi)",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Р р",match:"Р",de:"r",note:"Achtung, falscher Freund: sieht aus wie lat. P, klingt aber r (gerollt)",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"С с",match:"С",de:"s (stimmlos)",note:"Achtung, falscher Freund: sieht aus wie lat. C, klingt aber scharfes s",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Т т",match:"Т",de:"t",note:"wie t",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"У у",match:"У",de:"u",note:"Achtung, falscher Freund: sieht aus wie lat. y, klingt aber u",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Ф ф",match:"Ф",de:"f",note:"wie f",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Х х",match:"Х",de:"ch",note:"Achtung, falscher Freund: sieht aus wie lat. x, klingt aber ch wie in Bach",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Ц ц",match:"Ц",de:"z (ts)",note:"wie z in Zeit",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Ч ч",match:"Ч",de:"tsch",note:"wie tsch in Tschuess",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Ш ш",match:"Ш",de:"sch (stimmlos)",note:"wie sch in Schule",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Щ щ",match:"Щ",de:"scht",note:"Bulgarische Besonderheit: scht (im Russischen schtsch)",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Ъ ъ",match:"Ъ",de:"a-Schwa (dumpf)",note:"Eigener Vokal, typisch bulgarisch (z. B. in Bulgaria = България). Kein hartes Zeichen wie im Russischen",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Ь ь",match:"Ь",de:"Weichheitszeichen",note:"Kein eigener Laut, macht den Vorlaut weich - kommt fast nur in -ьо- vor",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Ю ю",match:"Ю",de:"ju",note:"wie ju in jung",cat:"Alphabet",lvl:"ABC",rom:""},
+ {bg:"Я я",match:"Я",de:"ja",note:"wie ja",cat:"Alphabet",lvl:"ABC",rom:""}
+];
+ALPHABET.forEach(function(l){ VOCAB.push(l); });
+VOCAB.forEach(function(v){ v.id=v.bg; }); // stabile ID = das Wort selbst -> neue Vokabeln koennen ueberall ergaenzt werden, ohne den Fortschritt zu verschieben
+var SESSION_TARGET=12;
+
+// ───────── Storage ─────────
+function load(k,d){ try{ var v=JSON.parse(localStorage.getItem(k)); return v==null?d:v; }catch(e){ return d; } }
+function save(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+function todayKey(){ return new Date().toISOString().split("T")[0]; }
+
+// ───────── Spaced repetition (SM-2) ─────────
+function sm2(c,quality){
+  var q=quality===0?1:quality===1?3:5;
+  var ease=c.ease||2.5, interval=c.interval||1, reps=c.reps||0;
+  if(q>=3){ interval=reps===0?1:reps===1?6:Math.round(interval*ease); reps+=1; }
+  else { interval=1; reps=0; }
+  ease=Math.max(1.3, ease+0.1-(5-q)*(0.08+(5-q)*0.02));
+  return {ease:ease,interval:interval,reps:reps,nextDue:Date.now()+interval*86400000};
+}
+
+// ───────── Audio ─────────
+function speak(t){
+  try{
+    if(!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(t.replace(/…/g,""));
+    u.lang="bg-BG"; u.rate=0.85;
+    var vs=window.speechSynthesis.getVoices()||[];
+    var bg=vs.filter(function(v){return v.lang&&v.lang.toLowerCase().indexOf("bg")===0;})[0];
+    if(bg) u.voice=bg;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+if("speechSynthesis" in window){ window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices();}; }
+
+// ───────── Typing match helpers ─────────
+function norm(s){ return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/ă|ǎ|â/g,"a").replace(/[^a-z]/g,""); }
+function key(s){
+  s=norm(s);
+  s=s.replace(/scht/g,"1").replace(/tsch/g,"2").replace(/sch/g,"3").replace(/ch/g,"4");
+  s=s.replace(/ss/g,"s").replace(/w/g,"v").replace(/ts/g,"z").replace(/y/g,"j");
+  return s;
+}
+// Kyrillisch: nur kyrillische Buchstaben, klein, ohne Leer-/Satzzeichen
+function normCyr(s){ return String(s).toLowerCase().replace(/[^\u0400-\u04FF]/g,""); }
+function hasCyr(s){ return /[\u0400-\u04FF]/.test(s); }
+function lev(a,b){
+  var m=a.length,n=b.length,d=[];
+  for(var i=0;i<=m;i++){ d[i]=[i]; }
+  for(var j=0;j<=n;j++){ d[0][j]=j; }
+  for(i=1;i<=m;i++) for(j=1;j<=n;j++)
+    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[m][n];
+}
+
+// ───────── State ─────────
+var progress=load("bg_progress",{});
+// Einmalige Migration: alte zahlenbasierte IDs (1,2,3…) -> wortbasierte IDs.
+// Die Reihenfolge der bestehenden Eintraege bleibt unveraendert, daher stimmt die Zuordnung.
+(function(){
+  var ks=Object.keys(progress);
+  if(ks.length && ks.every(function(k){return /^[0-9]+$/.test(k);})){
+    var mig={};
+    ks.forEach(function(k){ var i=parseInt(k,10)-1; if(VOCAB[i]) mig[VOCAB[i].bg]=progress[k]; });
+    progress=mig; save("bg_progress",progress);
+  }
+})();
+var streak=load("bg_streak",{count:0,lastDay:""});
+var todayC=load("bg_today",{day:todayKey(),count:0});
+var mode=load("bg_mode","cards");     // 'cards' | 'type'
+var scope=load("bg_scope","smart");   // 'smart' | 'A1' | 'A2' | 'review'
+var dir=load("bg_dir","bg2de");       // 'bg2de' (BG->DE erkennen) | 'de2bg' (DE->BG abrufen) — nur Karten-Modus
+var session=[], cur=0, flipped=false, phase="home", typeState=null;
+
+function mastered(v){ var p=progress[v.id]; return p&&p.reps>=2; }
+function isWord(v){ return v.lvl!=="ABC"; }                 // Wörter (A1/A2), ohne Alphabet
+function lvlStats(l){ var t=VOCAB.filter(function(v){return v.lvl===l;}); return {total:t.length, done:t.filter(mastered).length}; }
+function abcStats(){ var t=VOCAB.filter(function(v){return v.lvl==="ABC";}); return {total:t.length, done:t.filter(mastered).length}; }
+function masteredTotal(){ return VOCAB.filter(function(v){return isWord(v)&&mastered(v);}).length; }
+function wordTotal(){ return VOCAB.filter(isWord).length; }
+function isDue(v){ var p=progress[v.id]; return p&&p.nextDue<=Date.now(); }
+function seen(v){ return !!progress[v.id]; }
+function dueCount(){ return VOCAB.filter(function(v){return isWord(v)&&isDue(v);}).length; }
+function todayDone(){ return todayC.day===todayKey()?todayC.count:0; }
+
+function buildSession(){
+  var pool=[];
+  if(scope==="abc"){
+    var ad=VOCAB.filter(function(v){return v.lvl==="ABC"&&isDue(v);});
+    var af=VOCAB.filter(function(v){return v.lvl==="ABC"&&!seen(v);});
+    pool=ad.concat(af); if(!pool.length) pool=VOCAB.filter(function(v){return v.lvl==="ABC";});
+  } else if(scope==="review"){
+    pool=VOCAB.filter(function(v){return isWord(v)&&isDue(v);}); if(!pool.length) pool=VOCAB.filter(function(v){return isWord(v)&&seen(v);});
+  } else if(scope==="A1"||scope==="A2"){
+    var due=VOCAB.filter(function(v){return v.lvl===scope&&isDue(v);});
+    var fresh=VOCAB.filter(function(v){return v.lvl===scope&&!seen(v);});
+    pool=due.concat(fresh); if(!pool.length) pool=VOCAB.filter(function(v){return v.lvl===scope;});
+  } else {
+    var d=VOCAB.filter(function(v){return isWord(v)&&isDue(v);});
+    var fa1=VOCAB.filter(function(v){return v.lvl==="A1"&&!seen(v);});
+    var fa2=VOCAB.filter(function(v){return v.lvl==="A2"&&!seen(v);});
+    var a1=lvlStats("A1");
+    var intro=(a1.total&&a1.done/a1.total<0.8)?fa1.concat(fa2):fa2.concat(fa1);
+    pool=d.concat(intro);
+  }
+  var ids={}, out=[];
+  pool.forEach(function(v){ if(!ids[v.id]){ids[v.id]=1;out.push(v);} });
+  if(!out.length) out=VOCAB.filter(isWord);
+  return out.slice(0,SESSION_TARGET).sort(function(){return Math.random()-0.5;});
+}
+
+function startSession(){ session=buildSession(); cur=0; flipped=false; typeState=null; phase="session"; render(); }
+
+function answer(q){
+  var c=session[cur];
+  progress[c.id]=sm2(progress[c.id]||{},q); save("bg_progress",progress);
+  var t=todayKey();
+  todayC={day:t,count:(todayC.day===t?todayC.count:0)+1}; save("bg_today",todayC);
+  var yest=new Date(Date.now()-86400000).toISOString().split("T")[0];
+  if(streak.lastDay!==t){ streak=streak.lastDay===yest?{count:streak.count+1,lastDay:t}:{count:1,lastDay:t}; save("bg_streak",streak); }
+  typeState=null;
+  if(cur+1>=session.length){ phase="done"; render(); } else { cur++; flipped=false; render(); }
+}
+
+function checkTyping(){
+  var c=session[cur], val=(document.getElementById("inp")||{}).value||"";
+  var ok, close;
+  if(hasCyr(val)){                                   // kyrillische Eingabe -> mit dem echten Wort/Buchstaben vergleichen
+    var a=normCyr(val), b=normCyr(c.match||c.bg);
+    ok = a.length>0 && a===b;
+    close = !ok && a.length>0 && lev(a,b)<=1;
+  } else {                                           // lateinische Eingabe -> mit der Umschrift vergleichen
+    ok = key(val)===key(c.rom);
+    close = !ok && norm(val).length>0 && lev(norm(val),norm(c.rom))<=1;
+  }
+  typeState={ok:ok,close:close,val:val}; speak(c.match||c.bg); render();
+}
+
+// ───────── Render ─────────
+var app=document.getElementById("app");
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function flame(){ return '<span class="streak" style="color:'+(streak.count>0?'#f97316':'#666')+'"><span style="font-size:22px">'+(streak.count>0?'🔥':'💤')+'</span>'+streak.count+' '+(streak.count===1?'Tag':'Tage')+'</span>'; }
+function render(){ if(phase==="home")return home(); if(phase==="done")return done(); return ses(); }
+
+function home(){
+  var a1=lvlStats("A1"), a2=lvlStats("A2"), abc=abcStats();
+  var totalPct=Math.round(masteredTotal()/wordTotal()*100);
+  var startLabel = scope==="abc"
+      ? "Alphabet üben →"
+      : scope==="review"
+        ? (dueCount()? "Wiederholen ("+dueCount()+") →" : "Wiederholen →")
+        : (mode==="type" ? "Tippen üben →" : "Üben →");
+  app.innerHTML=
+   '<div class="top"><span class="brand">🇧🇬 Bulgarski</span>'+flame()+'</div>'+
+   '<div class="badge">Spaced Repetition · A1 → A2</div>'+
+   '<div class="panel"><div class="h">A2-Fortschritt</div>'+
+     '<div class="mega">'+totalPct+'%</div>'+
+     '<div class="megasub">'+masteredTotal()+' von '+wordTotal()+' Wörtern gefestigt</div>'+
+     '<div class="lvlrow"><span class="lvltag">A1</span><span class="lvlbar"><span class="lvlfill" style="width:'+(a1.total?Math.round(a1.done/a1.total*100):0)+'%"></span></span><span class="lvlnum">'+a1.done+'/'+a1.total+'</span></div>'+
+     '<div class="lvlrow"><span class="lvltag">A2</span><span class="lvlbar"><span class="lvlfill" style="width:'+(a2.total?Math.round(a2.done/a2.total*100):0)+'%"></span></span><span class="lvlnum">'+a2.done+'/'+a2.total+'</span></div>'+
+     '<div class="lvlrow"><span class="lvltag">🔤</span><span class="lvlbar"><span class="lvlfill" style="width:'+(abc.total?Math.round(abc.done/abc.total*100):0)+'%"></span></span><span class="lvlnum">'+abc.done+'/'+abc.total+'</span></div>'+
+   '</div>'+
+   '<div class="stats">'+
+     '<div class="stat"><div class="num">'+dueCount()+'</div><div class="lbl">Fällig</div></div>'+
+     '<div class="stat"><div class="num">'+todayDone()+'</div><div class="lbl">Heute</div></div>'+
+     '<div class="stat"><div class="num">'+masteredTotal()+'</div><div class="lbl">Gelernt</div></div>'+
+   '</div>'+
+   '<div class="seclabel">Modus</div>'+
+   '<div class="pills">'+
+     '<div class="pill '+(mode==="cards"?"on":"")+'" data-mode="cards">🃏 Karten</div>'+
+     '<div class="pill '+(mode==="type"?"on":"")+'" data-mode="type">⌨️ Tippen</div>'+
+   '</div>'+
+   (mode==="cards" ?
+     '<div class="seclabel">Richtung (Karten)</div>'+
+     '<div class="pills">'+
+       '<div class="pill '+(dir==="bg2de"?"on":"")+'" data-dir="bg2de">🇧🇬 → 🇩🇪</div>'+
+       '<div class="pill '+(dir==="de2bg"?"on":"")+'" data-dir="de2bg">🇩🇪 → 🇧🇬</div>'+
+     '</div>' : '')+
+   '<div class="seclabel">Fokus</div>'+
+   '<div class="pills">'+
+     '<div class="pill '+(scope==="smart"?"on":"")+'" data-scope="smart">Empfohlen</div>'+
+     '<div class="pill '+(scope==="review"?"on":"")+'" data-scope="review">Wiederholen</div>'+
+   '</div>'+
+   '<div class="pills" style="margin-top:8px">'+
+     '<div class="pill '+(scope==="A1"?"on":"")+'" data-scope="A1">A1</div>'+
+     '<div class="pill '+(scope==="A2"?"on":"")+'" data-scope="A2">A2</div>'+
+   '</div>'+
+   '<div class="pills" style="margin-top:8px">'+
+     '<div class="pill '+(scope==="abc"?"on":"")+'" data-scope="abc">🔤 Kyrillisches Alphabet</div>'+
+   '</div>'+
+   '<button class="cta" id="start">'+startLabel+'</button>'+
+   '<div class="foot">'+wordTotal()+' WÖRTER · 🔤 ALPHABET · 🔊 AUDIO · v5</div>';
+
+  [].forEach.call(document.querySelectorAll("[data-mode]"),function(el){ el.onclick=function(){ mode=el.getAttribute("data-mode"); save("bg_mode",mode); home(); }; });
+  [].forEach.call(document.querySelectorAll("[data-scope]"),function(el){ el.onclick=function(){ scope=el.getAttribute("data-scope"); save("bg_scope",scope); home(); }; });
+  [].forEach.call(document.querySelectorAll("[data-dir]"),function(el){ el.onclick=function(){ dir=el.getAttribute("data-dir"); save("bg_dir",dir); home(); }; });
+  document.getElementById("start").onclick=startSession;
+}
+
+function done(){
+  app.innerHTML=
+   '<div class="top"><span class="brand">🇧🇬 Bulgarski</span>'+flame()+'</div>'+
+   '<div style="text-align:center;margin-bottom:26px"><div class="emoji">✅</div>'+
+     '<div style="font-size:24px;font-weight:800;color:#7ed49a">Einheit geschafft!</div>'+
+     '<div style="font-size:14px;color:#5a9070;margin-top:8px">'+session.length+' Karten · '+streak.count+' Tage Streak · A2 zu '+Math.round(masteredTotal()/VOCAB.length*100)+'%</div></div>'+
+   '<div class="panel"><div class="h">Warum das funktioniert</div>'+
+     '<div class="megasub" style="color:#a8e6c0;font-size:14px;line-height:1.55">Spaced Repetition nutzt den <i>Spacing Effect</i> (Ebbinghaus, 1885): gewusste Karten kommen seltener, schwierige öfter. Der Tipp-Modus erzwingt aktives Abrufen — die wirksamste Form des Übens.</div></div>'+
+   '<button class="cta" id="h">Zur Übersicht</button>'+
+   '<button class="ghost" id="a">Noch eine Runde</button>';
+  document.getElementById("h").onclick=function(){ phase="home"; render(); };
+  document.getElementById("a").onclick=startSession;
+}
+
+function ses(){
+  var c=session[cur], pct=(cur/session.length)*100;
+  var head='<div class="top"><span class="brand">🇧🇬 Bulgarski</span><span class="count">'+(cur+1)+' / '+session.length+'</span></div>'+
+           '<div class="bar"><div class="fill" style="width:'+pct+'%"></div></div>'+
+           '<div class="badge">'+esc(c.cat)+' · '+c.lvl+'</div>';
+
+  if(mode==="type"){
+    if(!typeState){
+      app.innerHTML=head+
+        '<div class="prompt">'+esc(c.de)+'</div><div class="promptsub">Tippe das bulgarische Wort — kyrillisch (Здравейте) oder lateinisch</div>'+
+        '<input class="inp" id="inp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="hier tippen…">'+
+        '<button class="check" id="ck">Prüfen</button>'+
+        '<button class="cancel" id="cancel">Abbrechen</button>';
+      var inp=document.getElementById("inp"); inp.focus();
+      inp.addEventListener("keydown",function(e){ if(e.key==="Enter") checkTyping(); });
+      document.getElementById("ck").onclick=checkTyping;
+      document.getElementById("cancel").onclick=function(){ phase="home"; render(); };
+    } else {
+      var vClass=typeState.ok?"v-ok":typeState.close?"v-close":"v-no";
+      var vText=typeState.ok?"✓ Richtig!":typeState.close?"~ Fast richtig":"✗ Nicht ganz";
+      app.innerHTML=head+
+        '<div class="verdict '+vClass+'">'+vText+'</div>'+
+        (typeState.val?'<div class="yours">deine Eingabe: '+esc(typeState.val)+'</div>':'')+
+        '<div class="card"><div class="word">'+esc(c.bg)+'</div><div class="rom">'+esc(c.rom)+'</div>'+
+          '<button class="spk" id="spk">🔊</button><div class="divln"></div><div class="trans">'+esc(c.de)+'</div></div>'+
+        '<div class="ans">'+
+          '<button class="a-wrong '+(!typeState.ok&&!typeState.close?"sugg":"")+'" id="w">✗ Falsch</button>'+
+          '<button class="a-hard '+(typeState.close?"sugg":"")+'" id="h">~ Schwer</button>'+
+          '<button class="a-good '+(typeState.ok?"sugg":"")+'" id="g">✓ Gewusst</button>'+
+        '</div>';
+      document.getElementById("spk").onclick=function(){ speak(c.match||c.bg); };
+      document.getElementById("w").onclick=function(){ answer(0); };
+      document.getElementById("h").onclick=function(){ answer(1); };
+      document.getElementById("g").onclick=function(){ answer(2); };
+    }
+    return;
+  }
+
+  // card mode
+  var back='<div class="word">'+esc(c.bg)+'</div><div class="rom">'+esc(c.rom)+'</div><button class="spk" id="spk">🔊</button>'+(c.note?'<div class="note">'+esc(c.note)+'</div>':'')+'<div class="divln"></div><div class="trans">'+esc(c.de)+'</div>';
+  var front=(dir==="de2bg")
+    ? '<div class="word">'+esc(c.de)+'</div><div class="hint">Tippe zum Aufdecken</div>'
+    : '<div class="word">'+esc(c.bg)+'</div><div class="rom">'+esc(c.rom)+'</div><button class="spk" id="spk">🔊</button><div class="hint">Tippe zum Aufdecken</div>';
+  var face = flipped ? back : front;
+  app.innerHTML=head+'<div class="card" id="card" style="margin-top:14px">'+face+'</div>'+
+    (flipped
+      ? '<div class="ans"><button class="a-wrong" id="w" style="opacity:1">✗ Falsch</button><button class="a-hard" id="h" style="opacity:1">~ Schwer</button><button class="a-good" id="g" style="opacity:1">✓ Gewusst</button></div>'
+      : '<button class="cancel" id="cancel">Abbrechen</button>');
+  var spkEl=document.getElementById("spk"); if(spkEl) spkEl.onclick=function(ev){ ev.stopPropagation(); speak(c.match||c.bg); };
+  if(!flipped){
+    document.getElementById("card").onclick=function(){ flipped=true; speak(c.match||c.bg); render(); };
+    document.getElementById("cancel").onclick=function(){ phase="home"; render(); };
+  } else {
+    document.getElementById("w").onclick=function(){ answer(0); };
+    document.getElementById("h").onclick=function(){ answer(1); };
+    document.getElementById("g").onclick=function(){ answer(2); };
+  }
+}
+
+render();
+</script>
+</body>
+</html>
